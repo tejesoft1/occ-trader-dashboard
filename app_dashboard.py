@@ -38,11 +38,17 @@ def add_cors(resp):
     return _cors(resp)
 
 
-def _parse_ts(s, default):
+def _parse_ts(s, default, end_of_day=False):
+    """Si s es solo 'YYYY-MM-DD' y end_of_day=True, se interpreta como
+    23:59:59 de ese día (para que un 'Hasta' con fecha incluya todo ese
+    día). Si trae hora explícita ('YYYY-MM-DD HH:MM:SS'), se usa tal cual."""
     if not s:
         return default
     try:
-        return datetime.strptime(s, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+        dt = datetime.strptime(s, '%Y-%m-%d').replace(tzinfo=timezone.utc)
+        if end_of_day:
+            dt = dt + timedelta(hours=23, minutes=59, seconds=59)
+        return dt
     except ValueError:
         return datetime.strptime(s, '%Y-%m-%d %H:%M:%S').replace(tzinfo=timezone.utc)
 
@@ -105,7 +111,8 @@ def reconciliation():
     now = datetime.now(timezone.utc)
     default_start = now - timedelta(days=int(request.args.get('days', 30)))
     start_dt = _parse_ts(request.args.get('start'), default_start)
-    end_dt = _parse_ts(request.args.get('end'), now)
+    end_dt = _parse_ts(request.args.get('end'), now, end_of_day=True)
+    end_dt = min(end_dt, now)
 
     account_name = request.args.get('account', config.ACCOUNT_NAME)
     symbol = request.args.get('symbol', config.SYMBOL)
@@ -264,7 +271,8 @@ def capital_curve():
     now = datetime.now(timezone.utc)
     default_start = now - timedelta(days=int(request.args.get('days', 30)))
     start_dt = _parse_ts(request.args.get('start'), default_start)
-    end_dt = _parse_ts(request.args.get('end'), now)
+    end_dt = _parse_ts(request.args.get('end'), now, end_of_day=True)
+    end_dt = min(end_dt, now)
 
     account_name = request.args.get('account', config.ACCOUNT_NAME)
 

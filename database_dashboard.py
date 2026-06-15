@@ -38,7 +38,7 @@ def get_trades_for_reconciliation(account_name, symbol, start_ts=None, end_ts=No
     if end_ts:
         query += ' AND timestamp <= %s'
         params.append(end_ts)
-    query += ' ORDER BY id ASC'
+    query += ' ORDER BY id DESC'
     c.execute(query, params)
     rows = [dict(r) for r in c.fetchall()]
     c.close(); conn.close()
@@ -91,3 +91,4 @@ def get_equity_snapshots_range(account_name, start_ts=None, end_ts=None):
     rows = [dict(r) for r in c.fetchall()]
     c.close(); conn.close()
     return rows
+

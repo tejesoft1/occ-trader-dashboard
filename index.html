@@ -210,7 +210,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-date-fns/3.0.0/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script>
   const apiBaseEl = document.getElementById('apiBase');
   const apiTokenEl = document.getElementById('apiToken');
@@ -266,10 +265,16 @@
   }
 
   function renderCapitalChart(points) {
-    const equity = points.map(p => ({ x: p.timestamp, y: p.total_equity }));
-    const peak = points.map(p => ({ x: p.timestamp, y: p.peak_equity }));
+    const labels = points.map(p => {
+      const d = new Date(p.timestamp);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(d.getUTCDate())}-${pad(d.getUTCMonth() + 1)} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+    });
+    const equity = points.map(p => p.total_equity);
+    const peak = points.map(p => p.peak_equity);
 
     if (capitalChart) {
+      capitalChart.data.labels = labels;
       capitalChart.data.datasets[0].data = equity;
       capitalChart.data.datasets[1].data = peak;
       capitalChart.update();
@@ -285,13 +290,14 @@
     capitalChart = new Chart(document.getElementById('capitalChart'), {
       type: 'line',
       data: {
+        labels: labels,
         datasets: [
           {
             label: 'Equity total',
             data: equity,
             borderColor: '#4f8ef7',
-            backgroundColor: 'rgba(79,142,247,0.08)',
-            fill: true,
+            backgroundColor: 'transparent',
+            fill: false,
             tension: 0.15,
             pointRadius: 0,
             borderWidth: 2,
@@ -320,14 +326,6 @@
         },
         scales: {
           x: {
-            type: 'time',
-            time: {
-              tooltipFormat: 'dd-MM-yyyy HH:mm',
-              displayFormats: {
-                hour: 'dd-MM HH:mm',
-                day: 'dd-MM',
-              },
-            },
             ticks: { color: '#9a9fad', autoSkip: true, maxRotation: 0, maxTicksLimit: 10 },
             grid: { display: false },
           },

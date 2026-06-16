@@ -209,6 +209,7 @@
 
 </div>
 
+<script src="config.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
   const apiBaseEl = document.getElementById('apiBase');
@@ -227,8 +228,9 @@
 
   // Recordar config en localStorage del navegador (no sensible más allá de
   // lo que el propio usuario tipea, queda solo en su equipo)
-  apiBaseEl.value = localStorage.getItem('occ_dash_api_base') || '';
-  apiTokenEl.value = localStorage.getItem('occ_dash_api_token') || '';
+  const _cfg = window.OCC_DASH_CONFIG || {};
+  apiBaseEl.value = localStorage.getItem('occ_dash_api_base') || _cfg.apiBase || '';
+  apiTokenEl.value = localStorage.getItem('occ_dash_api_token') || _cfg.apiToken || '';
 
   const fmtUSD = (v) => (v === null || v === undefined) ? '—' :
     '$' + Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 });

@@ -224,7 +224,7 @@
   const today = new Date();
   const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
   startDateEl.value = localStorage.getItem('occ_dash_start') || monthAgo.toISOString().slice(0, 10);
-  endDateEl.value = localStorage.getItem('occ_dash_end') || today.toISOString().slice(0, 10);
+  endDateEl.value = today.toISOString().slice(0, 10); // siempre hoy
 
   // Recordar config en localStorage del navegador (no sensible más allá de
   // lo que el propio usuario tipea, queda solo en su equipo)
@@ -273,7 +273,12 @@
       return `${pad(d.getUTCDate())}-${pad(d.getUTCMonth() + 1)} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
     });
     const equity = points.map(p => p.total_equity);
-    const peak = points.map(p => p.peak_equity);
+    const peak = [];
+    let maxEquity = -Infinity;
+    points.forEach(p => {
+      if (p.total_equity > maxEquity) maxEquity = p.total_equity;
+      peak.push(maxEquity);
+    });
 
     if (capitalChart) {
       capitalChart.data.labels = labels;

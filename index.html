@@ -119,10 +119,6 @@
       <input type="text" id="apiBase" placeholder="https://tu-dominio.com/dashboard-api">
     </div>
     <div class="control-row">
-      <label for="apiToken">Token</label>
-      <input type="password" id="apiToken" placeholder="(si está configurado)">
-    </div>
-    <div class="control-row">
       <label for="startDate">Desde</label>
       <input type="date" id="startDate">
       <label for="endDate" style="min-width:60px;">Hasta</label>
@@ -213,7 +209,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
   const apiBaseEl = document.getElementById('apiBase');
-  const apiTokenEl = document.getElementById('apiToken');
   const startDateEl = document.getElementById('startDate');
   const endDateEl = document.getElementById('endDate');
   const loadBtn = document.getElementById('loadBtn');
@@ -230,7 +225,6 @@
   // lo que el propio usuario tipea, queda solo en su equipo)
   const _cfg = window.OCC_DASH_CONFIG || {};
   apiBaseEl.value = localStorage.getItem('occ_dash_api_base') || _cfg.apiBase || '';
-  apiTokenEl.value = localStorage.getItem('occ_dash_api_token') || _cfg.apiToken || '';
 
   const fmtUSD = (v) => (v === null || v === undefined) ? '—' :
     '$' + Number(v).toLocaleString('en-US', { maximumFractionDigits: 2 });
@@ -243,8 +237,6 @@
     const base = apiBaseEl.value.replace(/\/$/, '');
     const url = new URL(base + path);
     Object.entries(params || {}).forEach(([k, v]) => url.searchParams.set(k, v));
-    const token = apiTokenEl.value;
-    if (token) url.searchParams.set('token', token);
     const resp = await fetch(url.toString());
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     return resp.json();
@@ -414,7 +406,6 @@
       return;
     }
     localStorage.setItem('occ_dash_api_base', apiBaseEl.value);
-    localStorage.setItem('occ_dash_api_token', apiTokenEl.value);
     localStorage.setItem('occ_dash_start', startDateEl.value);
     localStorage.setItem('occ_dash_end', endDateEl.value);
 

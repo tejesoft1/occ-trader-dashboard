@@ -268,7 +268,7 @@
 
   function renderCapitalChart(points) {
     // Filtrar snapshots horarios con posición abierta (unrealized_pnl != 0)
-    const filtered = points.filter(p => !(p.source === 'hourly' && p.unrealized_pnl !== 0));
+    const filtered = points.filter(p => p.unrealized_pnl === 0);
     const labels = filtered.map(p => {
       const d = new Date(p.timestamp);
       const pad = (n) => String(n).padStart(2, '0');

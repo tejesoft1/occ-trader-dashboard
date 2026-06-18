@@ -1,3 +1,4 @@
 .env.dashboard
 __pycache__/
 *.pyc
+config.js
